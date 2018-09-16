@@ -1,0 +1,118 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>OrgChart</title>
+    <script src="~/Scripts/BALKANGraph.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #tree {
+            width: 100%;
+            height: 100%;
+        }
+
+        .field_0 {
+            font-family: Impact;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="tree"></div>
+
+    <script>
+        function request(url, postData, callback) {
+            var query = [];
+            for (var key in postData) {
+                query.push(encodeURIComponent(key) + '=' + encodeURIComponent(postData[key]));
+            }
+
+            url = url + "?" + query.join('&');
+
+            const xhr = new XMLHttpRequest();
+            xhr.timeout = 2000;
+            xhr.onreadystatechange = function (response) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        if (response && response.target && response.target.response)
+                            response = JSON.parse(response.target.response);
+                        callback(response);
+                    } else {
+                        alert("Error: " + xhr.status);
+                    }
+                }
+            }
+            xhr.ontimeout = function () {
+                alert("Timeout");
+            }
+            xhr.open('get', url, true)
+            xhr.send();
+        }
+
+        function updateLinkHandler(sender, from, to) {
+            request("UpdateLink", { from: from, to: to }, function () {
+                sender.updateLink(from, to);
+            });
+            return false;
+        }
+
+        function updateNodeHandler(sender, node) {
+            request("UpdateNode", node.data, function () {
+                sender.updateNode(node);
+            });
+            return false;
+        }
+
+        function deleteNodeHandler(sender, id) {
+            request("DeleteNode", { id: id }, function () {
+                sender.deleteNode(id);
+            });
+            return true;
+        }
+
+        function insertNodeHandler(sender, node) {
+            var data = JSON.parse(JSON.stringify(node.data));//clone
+            data.reportsTo = node.pid;
+            request("InsertNode", data, function (response) {
+                node.id = response.id;
+                node.data.id = response.id;
+
+                sender.insertNode(node);
+            });
+            return false;
+        }
+
+        request("Read", null, function (response) {
+            var chart = new OrgChart(document.getElementById("tree"), {
+                template: "luba",
+                enableSearch: false,
+                enableEdit: true,
+                enableDelete: true,
+                enableAdd: true,
+                updateLinkEvent: updateLinkHandler,
+                updateNodeEvent: updateNodeHandler,
+                deleteNodeEvent: deleteNodeHandler,
+                insertNodeEvent: insertNodeHandler,
+                nodeBinding: {
+                    field_0: "fullName"
+                },
+                links: response.links,
+                nodes: response.nodes
+            });
+        });
+    </script>
+</body>
+</html>
