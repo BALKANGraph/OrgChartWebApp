@@ -9,3 +9,7 @@ On the Start page, select New Project. In the New project dialog box, select the
 
 ![s1](https://balkangraph.com/js/img/s1.png)
 
+In the New ASP.NET Web Application dialog, choose Empty select MVC checkbox and then choose OK.
+
+![s1](https://balkangraph.com/js/img/s2.png)
+
