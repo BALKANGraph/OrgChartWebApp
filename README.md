@@ -13,3 +13,6 @@ In the New ASP.NET Web Application dialog, choose Empty select MVC checkbox and 
 
 ![s1](https://balkangraph.com/js/img/s2.png)
 
+In the solution explorer pane choose Manage NuGet packages
+![s1](https://balkangraph.com/js/img/s3.png)
+
