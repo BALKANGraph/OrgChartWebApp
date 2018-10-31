@@ -21,6 +21,24 @@ Install OrgChartJS package
 
 ![s1](https://balkangraph.com/js/img/s4.png)
 
+![s1](https://balkangraph.com/js/img/s5.png)
+
+![s1](https://balkangraph.com/js/img/s6.png)
+
+![s1](https://balkangraph.com/js/img/s7.png)
+
+![s1](https://balkangraph.com/js/img/s8.png)
+
+![s1](https://balkangraph.com/js/img/s9.png)
+
+![s1](https://balkangraph.com/js/img/s10.png)
+
+![s1](https://balkangraph.com/js/img/s11.png)
+
+![s1](https://balkangraph.com/js/img/s12.png)
+
+![s1](https://balkangraph.com/js/img/s13.png)
+
 ```
 CREATE TABLE [dbo].[Employees] (
     [Id]        INT           IDENTITY (1, 1) NOT NULL,
