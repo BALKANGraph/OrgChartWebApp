@@ -9,7 +9,7 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>OrgChart</title>
-    <script src="~/Scripts/BALKANGraph.js"></script>
+    <script src="~/Scripts/OrgChart.js"></script>
     <style>
         html, body {
             width: 100%;
@@ -76,14 +76,14 @@
             return false;
         }
 
-        function deleteNodeHandler(sender, id) {
+        function removeNodeHandler(sender, id) {
             request("DeleteNode", { id: id }, function () {
                 sender.deleteNode(id);
             });
             return true;
         }
 
-        function insertNodeHandler(sender, node) {
+        function addNodeHandler(sender, node) {
             var data = JSON.parse(JSON.stringify(node.data));//clone
             data.reportsTo = node.pid;
             request("InsertNode", data, function (response) {
@@ -98,14 +98,10 @@
         request("Read", null, function (response) {
             var chart = new OrgChart(document.getElementById("tree"), {
                 template: "luba",
-                enableSearch: false,
-                enableEdit: true,
-                enableDelete: true,
-                enableAdd: true,
-                updateLinkEvent: updateLinkHandler,
-                updateNodeEvent: updateNodeHandler,
-                deleteNodeEvent: deleteNodeHandler,
-                insertNodeEvent: insertNodeHandler,
+                onUpdateLink: updateLinkHandler,
+                onUpdateNode: updateNodeHandler,
+                onRemoveNode: removeNodeHandler,
+                onAddNode: addNodeHandler,
                 nodeBinding: {
                     field_0: "fullName"
                 },
