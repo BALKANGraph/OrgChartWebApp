@@ -21,9 +21,24 @@ Install OrgChartJS package
 
 ![s1](https://balkangraph.com/js/img/s4.png)
 
+Add newSQL Server Database OrgChartDatabase.mdf file in App_Data folder
+
 ![s1](https://balkangraph.com/js/img/s5.png)
 
+Double click on OrgChartDatabase.mdf and choose New Query from the context menu
+
 ![s1](https://balkangraph.com/js/img/s6.png)
+
+Execute the following query to create Employees table
+
+```
+CREATE TABLE [dbo].[Employees] (
+    [Id]        INT           IDENTITY (1, 1) NOT NULL,
+    [ReportsTo] INT           NULL,
+    [FullName]  NVARCHAR (50) NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+```
 
 ![s1](https://balkangraph.com/js/img/s7.png)
 
@@ -39,11 +54,4 @@ Install OrgChartJS package
 
 ![s1](https://balkangraph.com/js/img/s13.png)
 
-```
-CREATE TABLE [dbo].[Employees] (
-    [Id]        INT           IDENTITY (1, 1) NOT NULL,
-    [ReportsTo] INT           NULL,
-    [FullName]  NVARCHAR (50) NULL,
-    PRIMARY KEY CLUSTERED ([Id] ASC)
-);
-```
+
