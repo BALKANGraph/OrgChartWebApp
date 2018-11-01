@@ -62,6 +62,8 @@ Click Finish
 
 ![s1](https://balkangraph.com/js/img/s12.png)
 
+Add DefaultController and view
+
 ![s1](https://balkangraph.com/js/img/s13.png)
 
 
