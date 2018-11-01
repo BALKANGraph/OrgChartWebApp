@@ -42,13 +42,23 @@ CREATE TABLE [dbo].[Employees] (
 
 ![s1](https://balkangraph.com/js/img/s7.png)
 
+Create DAL folder and add OrgChartModel ADO.NET Entity Data Model then click Add
+
 ![s1](https://balkangraph.com/js/img/s8.png)
+
+Click Next
 
 ![s1](https://balkangraph.com/js/img/s9.png)
 
+Click Next
+
 ![s1](https://balkangraph.com/js/img/s10.png)
 
+Click Next
+
 ![s1](https://balkangraph.com/js/img/s11.png)
+
+Click Finish
 
 ![s1](https://balkangraph.com/js/img/s12.png)
 
