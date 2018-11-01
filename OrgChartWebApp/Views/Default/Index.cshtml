@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width" />
     <title>OrgChart</title>
     <script src="~/Scripts/OrgChart.js"></script>
+
     <style>
         html, body {
             width: 100%;
@@ -77,27 +78,34 @@
         }
 
         function removeNodeHandler(sender, id) {
-            request("DeleteNode", { id: id }, function () {
-                sender.deleteNode(id);
+            request("RemoveNode", { id: id }, function () {
+                sender.removeNode(id);
             });
             return true;
         }
 
         function addNodeHandler(sender, node) {
+            node.data.fullName = "John Smith";
             var data = JSON.parse(JSON.stringify(node.data));//clone
             data.reportsTo = node.pid;
-            request("InsertNode", data, function (response) {
+            request("AddNode", data, function (response) {
                 node.id = response.id;
                 node.data.id = response.id;
-
-                sender.insertNode(node);
+                sender.addNode(node);
             });
+
             return false;
         }
 
         request("Read", null, function (response) {
             var chart = new OrgChart(document.getElementById("tree"), {
                 template: "luba",
+                enableDragDrop: true,
+                nodeMenu: {
+                    edit: { text: "Edit" },
+                    add: { text: "Add" },
+                    remove: { text: "Remove" }
+                },
                 onUpdateLink: updateLinkHandler,
                 onUpdateNode: updateNodeHandler,
                 onRemoveNode: removeNodeHandler,

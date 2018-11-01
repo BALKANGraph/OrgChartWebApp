@@ -1,10 +1,10 @@
-﻿using System;
+﻿using OrgChartWebApp.DAL;
+using OrgChartWebApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using OrgChartWebApp.DAL;
-using OrgChartWebApp.Models;
 
 namespace OrgChartWebApp.Controllers
 {
@@ -40,7 +40,7 @@ namespace OrgChartWebApp.Controllers
             return new EmptyResult();
         }
 
-        public EmptyResult DeleteNode(IdModel model)
+        public EmptyResult RemoveNode(IdModel model)
         {
             var node = entities.Employees.First(p => p.Id == model.id);
             entities.Employees.Remove(node);
@@ -57,7 +57,7 @@ namespace OrgChartWebApp.Controllers
             return new EmptyResult();
         }
 
-        public JsonResult InsertNode(NodeModel model)
+        public JsonResult AddNode(NodeModel model)
         {
             Employee employee = new Employee();
             employee.FullName = model.fullName;
