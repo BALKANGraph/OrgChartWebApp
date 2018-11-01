@@ -64,21 +64,21 @@
         }
 
         function updateLinkHandler(sender, from, to) {
-            request("UpdateLink", { from: from, to: to }, function () {
+            request("@Url.Action("UpdateLink")", { from: from, to: to }, function () {
                 sender.updateLink(from, to);
             });
             return false;
         }
 
         function updateNodeHandler(sender, node) {
-            request("UpdateNode", node.data, function () {
+            request("@Url.Action("UpdateNode")", node.data, function () {
                 sender.updateNode(node);
             });
             return false;
         }
 
         function removeNodeHandler(sender, id) {
-            request("RemoveNode", { id: id }, function () {
+            request("@Url.Action("RemoveNode")", { id: id }, function () {
                 sender.removeNode(id);
             });
             return true;
@@ -97,7 +97,7 @@
             return false;
         }
 
-        request("Read", null, function (response) {
+        request("@Url.Action("Read")", null, function (response) {
             var chart = new OrgChart(document.getElementById("tree"), {
                 template: "luba",
                 enableDragDrop: true,
