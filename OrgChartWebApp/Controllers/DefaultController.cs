@@ -33,9 +33,9 @@ namespace OrgChartWebApp.Controllers
             return new EmptyResult();
         }
 
-        public EmptyResult RemoveNode(IdModel model)
+        public EmptyResult RemoveNode(int id)
         {
-            var node = entities.Employees.First(p => p.Id == model.id);
+            var node = entities.Employees.First(p => p.Id == id);
             entities.Employees.Remove(node);
 
             int? parentId = node.ReportsTo;

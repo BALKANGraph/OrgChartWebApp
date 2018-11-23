@@ -45,9 +45,8 @@
             return false;
         }
 
-        function removeNodeHandler(sender, id) {  
-
-            $.post("@Url.Action("RemoveNode")", { id: id })
+        function removeNodeHandler(sender, id) {
+            $.post("@Url.Action("RemoveNode")", { id: parseInt(id) })
                 .done(function () {
                     sender.removeNode(id);
                 })

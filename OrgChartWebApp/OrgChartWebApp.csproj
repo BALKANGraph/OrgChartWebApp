@@ -139,8 +139,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\IdModel.cs" />
-    <Compile Include="Models\LinkModel.cs" />
     <Compile Include="Models\NodeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
