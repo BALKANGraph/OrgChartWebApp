@@ -66,28 +66,8 @@ Add DefaultController and view
 
 ![s1](https://balkangraph.com/js/img/s13.png)
 
-Add 3 model cs files in Models folder
+Add 1 model cs files in Models folder
 
-```
-namespace OrgChartWebApp.Models
-{
-    public class IdModel
-    {
-        public int id { get; set; }
-    }
-}
-```
-
-```
-namespace OrgChartWebApp.Models
-{
-    public class LinkModel
-    {
-        public int from { get; set; }
-        public int to { get; set; }
-    }
-}
-```
 
 ```
 namespace OrgChartWebApp.Models
@@ -95,7 +75,7 @@ namespace OrgChartWebApp.Models
     public class NodeModel
     {
         public int id { get; set; }
-        public int reportsTo { get; set; }
+        public int? pid { get; set; }
         public string fullName { get; set; }
     }
 }
@@ -104,7 +84,10 @@ namespace OrgChartWebApp.Models
 The controller should have Read, UpdateLink, UpdateNode, RemoveNode and AddNode action methods
 
 ```
- public class DefaultController : Controller
+
+namespace OrgChartWebApp.Controllers
+{
+    public class DefaultController : Controller
     {
         OrgChartDatabaseEntities entities = new OrgChartDatabaseEntities();
 
@@ -115,30 +98,23 @@ The controller should have Read, UpdateLink, UpdateNode, RemoveNode and AddNode 
 
         public JsonResult Read()
         {
-            var nodes = entities.Employees.Select(p => new { id = p.Id, fullName = p.FullName });
-            var links = entities.Employees.Select(p => new { from = p.Id, to = p.ReportsTo });
-            return Json(new { nodes = nodes, links = links }, JsonRequestBehavior.AllowGet);
+            var nodes = entities.Employees.Select(p => new NodeModel{ id = p.Id, pid = p.ReportsTo, fullName = p.FullName });
+            return Json(new { nodes = nodes }, JsonRequestBehavior.AllowGet);
         }
 
-        public EmptyResult UpdateLink(LinkModel model)
-        {
-            var node = entities.Employees.First(p => p.Id == model.from);
-            node.ReportsTo = model.to;
-            entities.SaveChanges();
-            return new EmptyResult();
-        }
-
+        
         public EmptyResult UpdateNode(NodeModel model)
         {
             var node = entities.Employees.First(p => p.Id == model.id);
             node.FullName = model.fullName;
+            node.ReportsTo = model.pid;
             entities.SaveChanges();
             return new EmptyResult();
         }
 
-        public EmptyResult RemoveNode(IdModel model)
+        public EmptyResult RemoveNode(int id)
         {
-            var node = entities.Employees.First(p => p.Id == model.id);
+            var node = entities.Employees.First(p => p.Id == id);
             entities.Employees.Remove(node);
 
             int? parentId = node.ReportsTo;
@@ -157,7 +133,7 @@ The controller should have Read, UpdateLink, UpdateNode, RemoveNode and AddNode 
         {
             Employee employee = new Employee();
             employee.FullName = model.fullName;
-            employee.ReportsTo = model.reportsTo;
+            employee.ReportsTo = model.pid;
             entities.Employees.Add(employee);
 
             entities.SaveChanges();
@@ -165,6 +141,7 @@ The controller should have Read, UpdateLink, UpdateNode, RemoveNode and AddNode 
             return Json(new { id = employee.Id }, JsonRequestBehavior.AllowGet);
         }
     }
+}
 ```
 
 And finaly the View  
@@ -182,6 +159,7 @@ And finaly the View
     <meta name="viewport" content="width=device-width" />
     <title>OrgChart</title>
     <script src="~/Scripts/OrgChart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
     <style>
         html, body {
@@ -206,70 +184,39 @@ And finaly the View
 
     <div id="tree"></div>
 
-    <script>
-        function request(url, postData, callback) {
-            var query = [];
-            for (var key in postData) {
-                query.push(encodeURIComponent(key) + '=' + encodeURIComponent(postData[key]));
-            }
-
-            url = url + "?" + query.join('&');
-
-            const xhr = new XMLHttpRequest();
-            xhr.timeout = 2000;
-            xhr.onreadystatechange = function (response) {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        if (response && response.target && response.target.response)
-                            response = JSON.parse(response.target.response);
-                        callback(response);
-                    } else {
-                        alert("Error: " + xhr.status);
-                    }
-                }
-            }
-            xhr.ontimeout = function () {
-                alert("Timeout");
-            }
-            xhr.open('get', url, true)
-            xhr.send();
-        }
-
-        function updateLinkHandler(sender, from, to) {
-            request("@Url.Action("UpdateLink")", { from: from, to: to }, function () {
-                sender.updateLink(from, to);
-            });
-            return false;
-        }
+    <script> 
 
         function updateNodeHandler(sender, node) {
-            request("@Url.Action("UpdateNode")", node.data, function () {
-                sender.updateNode(node);
-            });
+            $.post("@Url.Action("UpdateNode")", node)
+                .done(function () {
+                    sender.updateNode(node);
+                })
             return false;
         }
 
         function removeNodeHandler(sender, id) {
-            request("@Url.Action("RemoveNode")", { id: id }, function () {
-                sender.removeNode(id);
-            });
+            $.post("@Url.Action("RemoveNode")", { id: parseInt(id) })
+                .done(function () {
+                    sender.removeNode(id);
+                })
             return true;
         }
 
         function addNodeHandler(sender, node) {
-            node.data.fullName = "John Smith";
-            var data = JSON.parse(JSON.stringify(node.data));//clone
-            data.reportsTo = node.pid;
-            request("AddNode", data, function (response) {
-                node.id = response.id;
-                node.data.id = response.id;
-                sender.addNode(node);
-            });
+            node.id = 0;
+            node.pid = parseInt(node.pid);
+            node.fullName = "John Smith";
+
+            $.post("@Url.Action("AddNode")", node)
+                .done(function (response) {
+                    node.id = response.id;
+                    sender.addNode(node);
+                })
 
             return false;
         }
 
-        request("@Url.Action("Read")", null, function (response) {
+        $.get("@Url.Action("Read")").done(function (response) {
             var chart = new OrgChart(document.getElementById("tree"), {
                 template: "luba",
                 enableDragDrop: true,
@@ -278,14 +225,12 @@ And finaly the View
                     add: { text: "Add" },
                     remove: { text: "Remove" }
                 },
-                onUpdateLink: updateLinkHandler,
-                onUpdateNode: updateNodeHandler,
-                onRemoveNode: removeNodeHandler,
-                onAddNode: addNodeHandler,
+                onUpdate: updateNodeHandler,
+                onRemove: removeNodeHandler,
+                onAdd: addNodeHandler,
                 nodeBinding: {
                     field_0: "fullName"
                 },
-                links: response.links,
                 nodes: response.nodes
             });
         });
