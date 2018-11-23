@@ -8,7 +8,7 @@ namespace OrgChartWebApp.Models
     public class NodeModel
     {
         public int id { get; set; }
-        public int reportsTo { get; set; }
+        public int? pid { get; set; }
         public string fullName { get; set; }
     }
 }

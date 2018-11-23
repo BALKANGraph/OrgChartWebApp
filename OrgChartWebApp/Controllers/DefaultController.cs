@@ -19,23 +19,16 @@ namespace OrgChartWebApp.Controllers
 
         public JsonResult Read()
         {
-            var nodes = entities.Employees.Select(p => new { id = p.Id, fullName = p.FullName });
-            var links = entities.Employees.Select(p => new { from = p.Id, to = p.ReportsTo });
-            return Json(new { nodes = nodes, links = links }, JsonRequestBehavior.AllowGet);
+            var nodes = entities.Employees.Select(p => new NodeModel{ id = p.Id, pid = p.ReportsTo, fullName = p.FullName });
+            return Json(new { nodes = nodes }, JsonRequestBehavior.AllowGet);
         }
 
-        public EmptyResult UpdateLink(LinkModel model)
-        {
-            var node = entities.Employees.First(p => p.Id == model.from);
-            node.ReportsTo = model.to;
-            entities.SaveChanges();
-            return new EmptyResult();
-        }
-
+        
         public EmptyResult UpdateNode(NodeModel model)
         {
             var node = entities.Employees.First(p => p.Id == model.id);
             node.FullName = model.fullName;
+            node.ReportsTo = model.pid;
             entities.SaveChanges();
             return new EmptyResult();
         }
@@ -61,7 +54,7 @@ namespace OrgChartWebApp.Controllers
         {
             Employee employee = new Employee();
             employee.FullName = model.fullName;
-            employee.ReportsTo = model.reportsTo;
+            employee.ReportsTo = model.pid;
             entities.Employees.Add(employee);
 
             entities.SaveChanges();

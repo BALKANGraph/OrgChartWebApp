@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width" />
     <title>OrgChart</title>
     <script src="~/Scripts/OrgChart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
     <style>
         html, body {
@@ -34,70 +35,40 @@
 
     <div id="tree"></div>
 
-    <script>
-        function request(url, postData, callback) {
-            var query = [];
-            for (var key in postData) {
-                query.push(encodeURIComponent(key) + '=' + encodeURIComponent(postData[key]));
-            }
-
-            url = url + "?" + query.join('&');
-
-            const xhr = new XMLHttpRequest();
-            xhr.timeout = 2000;
-            xhr.onreadystatechange = function (response) {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        if (response && response.target && response.target.response)
-                            response = JSON.parse(response.target.response);
-                        callback(response);
-                    } else {
-                        alert("Error: " + xhr.status);
-                    }
-                }
-            }
-            xhr.ontimeout = function () {
-                alert("Timeout");
-            }
-            xhr.open('get', url, true)
-            xhr.send();
-        }
-
-        function updateLinkHandler(sender, from, to) {
-            request("@Url.Action("UpdateLink")", { from: from, to: to }, function () {
-                sender.updateLink(from, to);
-            });
-            return false;
-        }
+    <script> 
 
         function updateNodeHandler(sender, node) {
-            request("@Url.Action("UpdateNode")", node.data, function () {
-                sender.updateNode(node);
-            });
+            $.post("@Url.Action("UpdateNode")", node)
+                .done(function () {
+                    sender.updateNode(node);
+                })
             return false;
         }
 
-        function removeNodeHandler(sender, id) {
-            request("@Url.Action("RemoveNode")", { id: id }, function () {
-                sender.removeNode(id);
-            });
+        function removeNodeHandler(sender, id) {  
+
+            $.post("@Url.Action("RemoveNode")", { id: id })
+                .done(function () {
+                    sender.removeNode(id);
+                })
             return true;
         }
 
         function addNodeHandler(sender, node) {
-            node.data.fullName = "John Smith";
-            var data = JSON.parse(JSON.stringify(node.data));//clone
-            data.reportsTo = node.pid;
-            request("AddNode", data, function (response) {
-                node.id = response.id;
-                node.data.id = response.id;
-                sender.addNode(node);
-            });
+            node.id = 0;
+            node.pid = parseInt(node.pid);
+            node.fullName = "John Smith";
+
+            $.post("@Url.Action("AddNode")", node)
+                .done(function (response) {
+                    node.id = response.id;
+                    sender.addNode(node);
+                })
 
             return false;
         }
 
-        request("@Url.Action("Read")", null, function (response) {
+        $.get("@Url.Action("Read")").done(function (response) {
             var chart = new OrgChart(document.getElementById("tree"), {
                 template: "luba",
                 enableDragDrop: true,
@@ -106,14 +77,12 @@
                     add: { text: "Add" },
                     remove: { text: "Remove" }
                 },
-                onUpdateLink: updateLinkHandler,
-                onUpdateNode: updateNodeHandler,
-                onRemoveNode: removeNodeHandler,
-                onAddNode: addNodeHandler,
+                onUpdate: updateNodeHandler,
+                onRemove: removeNodeHandler,
+                onAdd: addNodeHandler,
                 nodeBinding: {
                     field_0: "fullName"
                 },
-                links: response.links,
                 nodes: response.nodes
             });
         });
