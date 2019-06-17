@@ -147,7 +147,6 @@ namespace OrgChartWebApp.Controllers
 And finaly the View  
 
 ```
-
 @{
     Layout = null;
 }
@@ -158,7 +157,7 @@ And finaly the View
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>OrgChart</title>
-    <script src="~/Scripts/OrgChart.js"></script>
+    <script src="https://balkangraph.com/js/latest/orgchart.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
     <style>
@@ -184,55 +183,53 @@ And finaly the View
 
     <div id="tree"></div>
 
-    <script> 
+    <script>
 
-        function updateNodeHandler(sender, node) {
-            $.post("@Url.Action("UpdateNode")", node)
+        var chart = new OrgChart(document.getElementById("tree"), {
+            enableDragDrop: true,
+            nodeMenu: {
+                edit: { text: "Edit" },
+                add: { text: "Add" },
+                remove: { text: "Remove" }
+            },
+            nodeBinding: {
+                field_0: "fullName"
+            }
+        });
+
+        chart.on('update', function (sender, oldNode, newNode) {
+            $.post("@Url.Action("UpdateNode")", newNode)
                 .done(function () {
-                    sender.updateNode(node);
-                })
+                    sender.updateNode(newNode);
+                });
             return false;
-        }
+        });
 
-        function removeNodeHandler(sender, id) {
-            $.post("@Url.Action("RemoveNode")", { id: parseInt(id) })
-                .done(function () {
-                    sender.removeNode(id);
-                })
-            return true;
-        }
-
-        function addNodeHandler(sender, node) {
+        chart.on('add', function (sender, node) {
             node.id = 0;
             node.pid = parseInt(node.pid);
             node.fullName = "John Smith";
 
             $.post("@Url.Action("AddNode")", node)
                 .done(function (response) {
+                    debugger;
                     node.id = response.id;
                     sender.addNode(node);
                 })
 
             return false;
-        }
+        });
+
+        chart.on('remove', function (sender, nodeId) {
+            $.post("@Url.Action("RemoveNode")", { id: nodeId })
+                .done(function () {
+                    sender.removeNode(nodeId);
+                })
+            return true;
+        });
 
         $.get("@Url.Action("Read")").done(function (response) {
-            var chart = new OrgChart(document.getElementById("tree"), {
-                template: "luba",
-                enableDragDrop: true,
-                nodeMenu: {
-                    edit: { text: "Edit" },
-                    add: { text: "Add" },
-                    remove: { text: "Remove" }
-                },
-                onUpdate: updateNodeHandler,
-                onRemove: removeNodeHandler,
-                onAdd: addNodeHandler,
-                nodeBinding: {
-                    field_0: "fullName"
-                },
-                nodes: response.nodes
-            });
+            chart.load(response.nodes);
         });
     </script>
 </body>
