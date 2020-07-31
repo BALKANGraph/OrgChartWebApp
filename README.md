@@ -19,7 +19,7 @@ In the solution explorer pane choose Manage NuGet Packages...
 
 Download the OrgChartJS package from here: https://balkangraph.com/OrgChartJS/Download
 
-Create forlder Scripts in the project root folder and copy orgchart.js in it.
+Create folder Scripts in the project root folder and copy orgchart.js in it.
 
 Add newSQL Server Database OrgChartDatabase.mdf file in App_Data folder
 
