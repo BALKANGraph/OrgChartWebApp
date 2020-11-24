@@ -13,10 +13,6 @@ In the New ASP.NET Web Application dialog, choose Empty select MVC checkbox and 
 
 ![s1](https://balkangraph.com/js/img/s2.png)
 
-In the solution explorer pane choose Manage NuGet Packages...
-
-![s1](https://balkangraph.com/js/img/s3.png)
-
 Download the OrgChartJS package from here: https://balkangraph.com/OrgChartJS/Download
 
 Create folder Scripts in the project root folder and copy orgchart.js in it.
