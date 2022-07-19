@@ -153,7 +153,7 @@ And finaly the View
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>OrgChart</title>
-    <script src="https://balkangraph.com/js/latest/orgchart.js"></script>
+    <script src="https://balkangraph.com/js/orgchart.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
     <style>
