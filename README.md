@@ -208,7 +208,6 @@ And finaly the View
 
             $.post("@Url.Action("AddNode")", node)
                 .done(function (response) {
-                    debugger;
                     node.id = response.id;
                     sender.addNode(node);
                 })
