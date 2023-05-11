@@ -8,8 +8,7 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>OrgChart</title>
-    <script src="https://balkangraph.com/js/orgchart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://balkan.app/js/orgchart.js"></script>
 
     <style>
         html, body {
@@ -36,7 +35,7 @@
 
     <script>
 
-        var chart = new OrgChart(document.getElementById("tree"), {
+        let chart = new OrgChart(document.getElementById("tree"), {
             enableDragDrop: true,
             nodeMenu: {
                 edit: { text: "Edit" },
@@ -48,39 +47,66 @@
             }
         });
 
-        chart.on('update', function (sender, oldNode, newNode) {
-            $.post("@Url.Action("UpdateNode")", newNode)
-                .done(function () {
-                    sender.updateNode(newNode);
-                });
+
+
+        chart.onUpdateNode((args) => {
+            let newNode = args.newData;
+            fetch("@Url.Action("UpdateNode")", {
+                method: "POST",
+                body: JSON.stringify(newNode),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(chart.updateNode(newNode))
+            .catch(error => console.error(error));
             return false;
         });
 
-        chart.on('add', function (sender, node) {
+        chart.onAddNode((args) => {
+            let node = args.data;
             node.id = 0;
             node.pid = parseInt(node.pid);
             node.fullName = "John Smith";
 
-            $.post("@Url.Action("AddNode")", node)
-                .done(function (response) {
-                    node.id = response.id;
-                    sender.addNode(node);
-                })
+            fetch("@Url.Action("AddNode")", {
+                method: "POST",
+                body: JSON.stringify(node),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                node.id = data.id;
+                chart.addNode(node);
+            })
+            .catch(error => console.error(error));
 
             return false;
         });
 
-        chart.on('remove', function (sender, nodeId) {
-            $.post("@Url.Action("RemoveNode")", { id: nodeId })
-                .done(function () {
-                    sender.removeNode(nodeId);
-                })
+        chart.onRemoveNode((args) => {
+            let nodeId = args.id
+
+            fetch("@Url.Action("RemoveNode")", {
+                method: "POST",
+                body: JSON.stringify({ id: nodeId }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(chart.removeNode(nodeId))
+            .catch(error => console.error(error));
             return true;
         });
 
-        $.get("@Url.Action("Read")").done(function (response) {
-            chart.load(response.nodes);
-        });
+       fetch("@Url.Action("Read")")
+        .then(response => response.json())
+        .then(data => {
+            chart.load(data.nodes);
+        })
+        .catch(error => console.error(error));
     </script>
 </body>
 </html>
